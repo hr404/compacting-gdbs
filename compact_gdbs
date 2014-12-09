@@ -1,0 +1,68 @@
+#Import modules for script to function
+import os, arcpy, datetime
+
+#Location in Windows where the script will start.  The way the script is written,
+#any subfolders in the location will be included in the "walk" section
+
+location = raw_input("Path where you want to start. Always use two backslashes in path (i.e. J:\\\PROJECTS\\\)")
+
+#Timestamp for start of script
+start = datetime.datetime.now()
+
+#Calcuate initial folder size
+folder = location
+folder_size = 0
+for (path, dirs, files) in os.walk(folder):
+  for file in files:
+    filename = os.path.join(path, file)
+    folder_size += os.path.getsize(filename)
+print "Currently path file size = %0.1f MB" % (folder_size/(1024*1024.0))
+start_size = folder_size/(1024*1024.0)
+print "\n"
+
+#Blank lists to be used in script. They get filled out by the dirpath function
+list = []
+gdbs = []
+
+#Get list of directories using walk function. GDBs show up as a folder in Windows so
+#you can then get a list of GDBs by calling out the text, ".gdb" in the dirpath list
+for dirpath, dirname, filename in os.walk(location ,topdown=True, onerror=None, followlinks=True):
+    list.append(dirpath)
+    if ".gdb" in dirpath:
+        gdbs.append(dirpath)
+    else:
+        arcpy.GetMessages()
+
+#Start the iteration of compacting GDBs that are in the gdbs python list
+for gdb in gdbs:
+    print "Attempting compact on " + gdb
+    try:
+        arcpy.Compact_management(gdb)
+        message = arcpy.GetMessages()
+        print message
+        print "\n"
+    except:
+        print "Could not compact " + gdb
+        print "\n"
+
+#Calcuate end folder size
+newfolder = location
+newfolder_size = 0
+for (path, dirs, files) in os.walk(folder):
+  for file in files:
+    filename = os.path.join(path, file)
+    newfolder_size += os.path.getsize(filename)
+print "New path file size = %0.1f MB" % (newfolder_size/(1024*1024.0))
+end_size = newfolder_size/(1024*1024.0)
+
+#Timestamp of finishing and showing how long the script took
+finish = datetime.datetime.now()
+time = finish - start
+
+#find out how much space was saved
+savings = start_size - end_size
+
+#print out more results!
+print "It took " + str(time) + " to run this script, that's in days, hours, minutes, seconds!"
+print "You saved " + str(savings) + " MB, YEAH!"
+print raw_input("Script finished press Enter to close window")
