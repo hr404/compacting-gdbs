@@ -2,7 +2,7 @@
 import os, arcpy, datetime
 
 #Location in Windows where the script will start.  The way the script is written,
-#any subfolders in the location will be included in the "walk" section
+#any subfolders in the location will be included in the "walk" section.
 
 location = raw_input("Path where you want to start. Always use two backslashes in path (i.e. J:\\\PROJECTS\\\)")
 
@@ -20,7 +20,7 @@ print "Currently path file size = %0.1f MB" % (folder_size/(1024*1024.0))
 start_size = folder_size/(1024*1024.0)
 print "\n"
 
-#Blank lists to be used in script. They get filled out by the dirpath function
+#Blank lists to be used in script. They get filled out by the dirpath function.
 list = []
 gdbs = []
 
